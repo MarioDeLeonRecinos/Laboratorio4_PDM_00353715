@@ -14,6 +14,7 @@ import com.example.myapplication.network.NetworkUtils
 import com.example.myapplication.pojos.Movie
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
+import org.json.JSONObject
 import java.io.IOException
 
 class MainActivity : AppCompatActivity() {
@@ -53,7 +54,6 @@ class MainActivity : AppCompatActivity() {
     fun addMovieToList(movie: Movie){
         movieList.add(movie)
         movieAdapter.changeList(movieList)
-        Log.d("Number")
     }
 
     private fun movieItemClicked(item: Movie){
@@ -79,16 +79,15 @@ class MainActivity : AppCompatActivity() {
 
         override fun onPostExecute(movieInfo: String) {
             super.onPostExecute(movieInfo)
-            if (!movieInfo.isEmpty()){
-                val movie = Gson().fromJson<Movie>(movieInfo,Movie::class.java)
-                if (true){
-
+            if (!movieInfo.isEmpty()) {
+                val movieJson = JSONObject(movieInfo)
+                if (movieJson.getString("Response") == "True") {
+                    val movie = Gson().fromJson<Movie>(movieInfo, Movie::class.java)
+                    addMovieToList(movie)
+                } else {
+                    Snackbar.make(main_ll, "No existe la pelicula en la base", Snackbar.LENGTH_SHORT).show()
                 }
-                addMovieToList(movie)
-            }else{
-                Snackbar.make(main_ll,"No existe la pelicula en la base",Snackbar.LENGTH_SHORT).show()
             }
-
         }
 
     }
